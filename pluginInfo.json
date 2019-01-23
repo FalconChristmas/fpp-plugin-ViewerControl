@@ -1,6 +1,6 @@
 {
 	"repoName": "fpp-plugin-ViewerControl",
-	"name": "Viewer Control plugin for use with ControlMyLights.com",
+	"name": "Viewer Control",
 	"author": "Chris Pinkham (CaptainMurdoch)",
 	"description": "The Viewer Control plugin allows your viewers to interact with your display via a personalized web page at ControlMyLights.com.  Viewers can request or vote for songs to play on your display.",
 	"homeURL": "https://github.com/FalconChristmas/fpp-plugin-ViewerControl",
