@@ -668,12 +668,12 @@ include_once('playlistEditor.php');
 					</table>
 				</td><td width='50px'>&nbsp;</td><td>
 					<table>
-						<tr><td colspan=2>Use Pixel Overlay Model to display Current Request Code: <? PrintSettingCheckbox('', 'PixelOverlayRequestCode', 1, 0, 1, 0, 'ViewerControl', ''); ?></td></tr>
+						<tr><td colspan=2>Use Pixel Overlay Model to display Current Request Code: <? PrintSettingCheckbox('', 'PixelOverlayRequestCode', 1, 0, 1, 0, 'fpp-plugin-ViewerControl', ''); ?></td></tr>
 						<tr><td>Model:</td><td>
-<? PrintSettingSelect('Request Code Model', 'RequestCodeModel', 1, 0, '', Array(), 'ViewerControl', '', ''); ?>
+<? PrintSettingSelect('Request Code Model', 'RequestCodeModel', 1, 0, '', Array(), 'fpp-plugin-ViewerControl', '', ''); ?>
 							</td></tr>
 						<tr><td>Font:</td><td>
-<? PrintSettingSelect('Request Code Font', 'RequestCodeFont', 1, 0, '', Array(), 'ViewerControl', '', ''); ?>
+<? PrintSettingSelect('Request Code Font', 'RequestCodeFont', 1, 0, '', Array(), 'fpp-plugin-ViewerControl', '', ''); ?>
 							</td></tr>
 						<tr><td>Font Size:</td><td>
 <?
@@ -703,7 +703,7 @@ $fontSizes = Array(
 	"52" => 52,
 	);
 
-PrintSettingSelect('Request Code Font Size', 'RequestCodeFontSize', 1, 0, 10, $fontSizes, 'ViewerControl', '', '');
+PrintSettingSelect('Request Code Font Size', 'RequestCodeFontSize', 1, 0, 10, $fontSizes, 'fpp-plugin-ViewerControl', '', '');
 ?>
 							</td></tr>
 						<tr><td>Color:</td><td>
@@ -715,7 +715,7 @@ $fontColors = Array(
 	'Blue' => 'blue',
 	'Yellow' => 'yellow'
 	);
-PrintSettingSelect('Request Code Color', 'RequestCodeColor', 1, 0, '#FF0000', $fontColors, 'ViewerControl', '', '');
+PrintSettingSelect('Request Code Color', 'RequestCodeColor', 1, 0, '#FF0000', $fontColors, 'fpp-plugin-ViewerControl', '', '');
 ?>
 							</td></tr>
 					</table>
