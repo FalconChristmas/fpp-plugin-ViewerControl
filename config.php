@@ -604,8 +604,8 @@ function SyncPlaylists()
 		<div id='tab-site-config'>
 			<table>
 				<tr><td>Admin Site:</td><td><a href='http://ControlMyLights.com/admin/' target='_blank'>http://ControlMyLights.com/admin/</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You must <a href='http://ControlMyLights.com/admin/signup.php' target='_blank'>sign up</a> first to create a beta testing account.</td></tr>
-				<tr><td>Site Code:</td><td><? PrintSettingTextSaved("SiteCode", 0, 0, 16, 16, "ViewerControl", '', 'ReLoadSiteInfo'); ?></td></tr>
-				<tr><td>Site Key:</td><td><? PrintSettingTextSaved("SiteKey", 0, 0, 16, 16, "ViewerControl", '', 'ReLoadSiteInfo'); ?></td></tr>
+				<tr><td>Site Code:</td><td><? PrintSettingTextSaved("SiteCode", 0, 0, 16, 16, 'fpp-plugin-ViewerControl', '', 'ReLoadSiteInfo'); ?></td></tr>
+				<tr><td>Site Key:</td><td><? PrintSettingTextSaved("SiteKey", 0, 0, 16, 16, 'fpp-plugin-ViewerControl', '', 'ReLoadSiteInfo'); ?></td></tr>
 				<tr><td>Site Name:</td><td><span id='SiteName' class='siteInfo'></span></td></tr>
 				<tr><td>Vanity Name:</td><td><span id='VanityName' class='siteInfo'></span></td></tr>
 				<tr><td>Public URL:</td><td><span id='SiteURL' class='siteInfo'></span></td></tr>
