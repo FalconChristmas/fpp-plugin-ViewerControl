@@ -218,7 +218,7 @@ function startedNextItem() {
 		unlink($nextFile);
 	}
 
-	# Force an update of the Requust Code
+	# Force an update of the Request Code
 	if (isset($pluginSettings['PixelOverlayRequestCode']) && ($pluginSettings['PixelOverlayRequestCode'] == 1))
 	{
 		$path = dirname(__FILE__);

@@ -715,7 +715,7 @@ $fontColors = Array(
 	'Blue' => 'blue',
 	'Yellow' => 'yellow'
 	);
-PrintSettingSelect('Request Code Color', 'RequestCodeColor', 1, 0, '#FF0000', $fontColors, 'fpp-plugin-ViewerControl', '', '');
+PrintSettingSelect('Request Code Color', 'RequestCodeFontColor', 1, 0, '#FF0000', $fontColors, 'fpp-plugin-ViewerControl', '', '');
 ?>
 							</td></tr>
 					</table>
