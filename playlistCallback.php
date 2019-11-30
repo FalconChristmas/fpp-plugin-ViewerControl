@@ -17,9 +17,9 @@ require_once('playlistentry.php');
 require_once('pluginconfig.php');
 
 $command_array = Array(
-    "prepNextItem"    => 'prepNextItem',
-    "loadNextItem"    => 'loadNextItem',
-    "startedNextItem" => 'startedNextItem',
+	"prepNextItem"    => 'prepNextItem',
+	"loadNextItem"    => 'loadNextItem',
+	"startedNextItem" => 'startedNextItem',
 	"currentStatus"   => 'currentStatus',
 );
 
