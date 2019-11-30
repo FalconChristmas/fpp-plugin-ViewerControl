@@ -20,6 +20,14 @@ $requestCode = $data['CurrentRequestCode'];
 
 $model = $pluginSettings['RequestCodeModel'];
 
+$modelHost = 'localhost';
+if (isset($pluginSettings['RequestCodeModelHost']))
+{
+	$modelHost = $pluginSettings['RequestCodeModelHost'];
+	if ($modelHost == '')
+		$modelHost = 'localhost';
+}
+
 $font = 'fixed';
 if (isset($pluginSettings['RequestCodeFont']))
 	$font = $pluginSettings['RequestCodeFont'];
@@ -56,9 +64,9 @@ $arr['PixelsPerSecond'] = 0;
 $arr['Color'] = $fontColor;
 $arr['AutoEnable'] = 0;
 
-$url = 'http://localhost:32322/overlays/model/' . $model . '/text';
+$url = 'http://' . $modelHost . ':32322/overlays/model/' . $model . '/text';
 
-printf( "URL: %s\n", $url);
+//printf( "URL: %s\nData:\n%s\n", $url, json_encode($arr));
 
 $ch = curl_init($url);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");

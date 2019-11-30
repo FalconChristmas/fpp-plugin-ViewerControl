@@ -669,6 +669,12 @@ include_once('playlistEditor.php');
 				</td><td width='50px'>&nbsp;</td><td>
 					<table>
 						<tr><td colspan=2>Use Pixel Overlay Model to display Current Request Code: <? PrintSettingCheckbox('', 'PixelOverlayRequestCode', 1, 0, 1, 0, 'fpp-plugin-ViewerControl', ''); ?></td></tr>
+						<tr><td>Remote Model Host IP:</td>
+							<td>
+<?
+PrintSettingTextSaved('RequestCodeModelHost', 0, 0, 32, 32, 'fpp-plugin-ViewerControl');
+?>
+							</td></tr>
 						<tr><td>Model:</td><td>
 <? PrintSettingSelect('Request Code Model', 'RequestCodeModel', 1, 0, '', Array(), 'fpp-plugin-ViewerControl', '', ''); ?>
 							</td></tr>
@@ -710,10 +716,12 @@ PrintSettingSelect('Request Code Font Size', 'RequestCodeFontSize', 1, 0, 10, $f
 <?
 $fontColors = Array(
 	'-- Pick a Text Color --' => '',
-	'Red' => 'red',
-	'Green' => 'green',
-	'Blue' => 'blue',
-	'Yellow' => 'yellow'
+	'Red' => '#FF0000',
+	'Green' => '#00FF00',
+	'Blue' => '#0000FF',
+	'Yellow' => '#FFFF00',
+	'Purple' => '#FF00FF',
+	'Cyan' => '#00FFFF'
 	);
 PrintSettingSelect('Request Code Color', 'RequestCodeFontColor', 1, 0, '#FF0000', $fontColors, 'fpp-plugin-ViewerControl', '', '');
 ?>
