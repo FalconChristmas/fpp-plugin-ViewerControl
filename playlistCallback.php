@@ -160,6 +160,13 @@ function loadNextItem() {
 	global $settings;
 	global $pluginSettings;
 
+	# Update the Request Code
+	if (isset($pluginSettings['PixelOverlayRequestCode']) && ($pluginSettings['PixelOverlayRequestCode'] == 1))
+	{
+		$path = dirname(__FILE__);
+		system("/opt/fpp/scripts/eventScript $path/displayRequestCode.php");
+	}
+
 	$nextFile = $settings['mediaDirectory'] . '/plugins/' . $pluginSettings['plugin'] . '/tmp/next.json';
 
 	if (!file_exists($nextFile))
@@ -218,7 +225,7 @@ function startedNextItem() {
 		unlink($nextFile);
 	}
 
-	# Force an update of the Request Code
+	# Update the Request Code in case it changed
 	if (isset($pluginSettings['PixelOverlayRequestCode']) && ($pluginSettings['PixelOverlayRequestCode'] == 1))
 	{
 		$path = dirname(__FILE__);
