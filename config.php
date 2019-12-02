@@ -1,9 +1,11 @@
 <?
 require_once("pluginconfig.php");
 
-function CheckForDefaultPlaylist() {
+function CheckForDefaultPlaylists() {
 	global $settings;
 
+	/////////////////////////////////////////
+	// Default fallback playlist
 	$playlistFile = $settings['playlistDirectory'] . '/CML-DefaultPlaylist.json';
 
 	if (!file_exists($playlistFile))
@@ -18,9 +20,79 @@ function CheckForDefaultPlaylist() {
 }');
 		fclose($f);
 	}
+
+	/////////////////////////////////////////
+	// Playlist to clear Viewer Control queue
+	$playlistFile = $settings['playlistDirectory'] . '/CML-Action-ClearQueue.json';
+
+	if (!file_exists($playlistFile))
+	{
+		$f = fopen($playlistFile, "w") or exit("Unable to open file! " . $playlistFile);
+		fprintf($f, '{
+	"name": "CML-Action-ClearQueue",
+	"repeat": 0,
+	"loopCount": 0,
+	"mainPlaylist": [
+		{
+			"type": "url",
+			"method": "GET",
+			"url": "http://127.0.0.1/plugin.php?plugin=fpp-plugin-ViewerControl&page=playlistCallback.php&nopage=1&command=clearQueue",
+			"data": ""
+		}
+	]
+}');
+		fclose($f);
+	}
+
+	/////////////////////////////////////////
+	// Playlist to enable Viewer Control
+	$playlistFile = $settings['playlistDirectory'] . '/CML-Action-EnableViewerControl.json';
+
+	if (!file_exists($playlistFile))
+	{
+		$f = fopen($playlistFile, "w") or exit("Unable to open file! " . $playlistFile);
+		fprintf($f, '{
+	"name": "CML-Action-EnableViewerControl",
+	"repeat": 0,
+	"loopCount": 0,
+	"mainPlaylist": [
+		{
+			"type": "url",
+			"method": "GET",
+			"url": "http://127.0.0.1/plugin.php?plugin=fpp-plugin-ViewerControl&page=playlistCallback.php&nopage=1&command=enableControl",
+			"data": ""
+		}
+	]
+}');
+		fclose($f);
+	}
+
+	/////////////////////////////////////////
+	// Playlist to disable Viewer Control
+	$playlistFile = $settings['playlistDirectory'] . '/CML-Action-DisableViewerControl.json';
+
+	if (!file_exists($playlistFile))
+	{
+		$f = fopen($playlistFile, "w") or exit("Unable to open file! " . $playlistFile);
+		fprintf($f, '{
+	"name": "CML-Action-DisableViewerControl",
+	"repeat": 0,
+	"loopCount": 0,
+	"mainPlaylist": [
+		{
+			"type": "url",
+			"method": "GET",
+			"url": "http://127.0.0.1/plugin.php?plugin=fpp-plugin-ViewerControl&page=playlistCallback.php&nopage=1&command=disableControl",
+			"data": ""
+		}
+	]
+}');
+		fclose($f);
+	}
+
 }
 
-CheckForDefaultPlaylist();
+CheckForDefaultPlaylists();
 ?>
 
 <script type="text/javascript" src="js/fpp.js"></script>
@@ -77,7 +149,7 @@ $(document).ready(function(){
 	GetBlockList();
 	$('#txtPlaylistName').prop('disabled', true);
 	PlaylistTypeChanged();
-	PopulatePlaylists("playList", 'CML-', '');
+	PopulatePlaylists("playList", '^CML-', '');
 });
 
 function SetSiteInfo(data) {
@@ -548,6 +620,18 @@ foreach($mediaEntries as $mediaFile)
 function SyncPlaylistsFromData(songs)
 {
 	var html = '';
+	var actionDisablePlaylist = {};
+	actionDisablePlaylist.PlayerData = 'CML-Action-DisableViewerControl';
+	songs.unshift(actionDisablePlaylist);
+
+	var actionEnablePlaylist = {};
+	actionEnablePlaylist.PlayerData = 'CML-Action-EnableViewerControl';
+	songs.unshift(actionEnablePlaylist);
+
+	var actionClearPlaylist = {};
+	actionClearPlaylist.PlayerData = 'CML-Action-ClearQueue';
+	songs.unshift(actionClearPlaylist);
+
 	var defaultPlaylist = {};
 	defaultPlaylist.PlayerData = 'CML-DefaultPlaylist';
 	songs.unshift(defaultPlaylist);
@@ -616,6 +700,7 @@ function SyncPlaylists()
 				<tr><td>Next Local Item:</td><td><span id='NextLocalItem' class='siteInfo'></span></td></tr>
 				<tr><td>Last Local Item:</td><td><span id='LastLocalItem' class='siteInfo'></span></td></tr>
 				<tr><td>Time Zone:</td><td><span id='TimeZone' class='siteInfo'></span></td></tr>
+				<tr><td colspan=2>Use CML-DefaultPlaylist fallback? <? PrintSettingCheckbox('Fallback Playlist', 'UseDefaultPlaylist', 0, 0, 1, 0, 'fpp-plugin-ViewerControl'); ?></td></tr>
 			</table>
 		</div>
 		<div id='tab-queue'>

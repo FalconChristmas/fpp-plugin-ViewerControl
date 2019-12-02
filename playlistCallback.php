@@ -21,6 +21,9 @@ $command_array = Array(
 	"loadNextItem"    => 'loadNextItem',
 	"startedNextItem" => 'startedNextItem',
 	"currentStatus"   => 'currentStatus',
+	"enableControl"   => 'enableControl',
+	"disableControl"  => 'disableControl',
+	"clearQueue"      => 'clearQueue',
 );
 
 $command = "";
@@ -96,6 +99,11 @@ function prepHelper() {
 		$entries = $playlist['mainPlaylist'];
 
 		$result['playlistEntries'] = $entries;
+	}
+	else if (isset($pluginSettings['UseDefaultPlaylist']) && ($pluginSettings['UseDefaultPlaylist'] == 0))
+	{
+		$result = Array();
+		$result['status'] = "Nothing in queue and default playlist disabled";
 	}
 	else
 	{
@@ -270,4 +278,53 @@ function currentStatus() {
 	// FIXME, more good stuff here
 }
 /////////////////////////////////////////////////////////////////////////////
+function setControlEnabled($enabled) {
+	global $settings;
+	global $pluginSettings;
+	global $siteBase;
+
+	$url = $siteBase . '/api/site/' . $pluginSettings['SiteCode'] . '/enable';
+
+	$vars = 'SiteKey=' . $pluginSettings['SiteKey'] . "&Enabled=$enabled";
+
+	$ch = curl_init($url);
+	curl_setopt( $ch, CURLOPT_POST, 1);
+	curl_setopt( $ch, CURLOPT_POSTFIELDS, $vars);
+	curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+	curl_setopt( $ch, CURLOPT_HEADER, 0);
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+
+	$resp = curl_exec($ch);
+}
+
+function enableControl() {
+	setControlEnabled(1);
+}
+
+function disableControl() {
+	setControlEnabled(0);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+function clearQueue() {
+	global $settings;
+	global $pluginSettings;
+	global $siteBase;
+
+	$url = $siteBase . '/api/site/' . $pluginSettings['SiteCode'] . '/queue';
+
+	$vars = 'SiteKey=' . $pluginSettings['SiteKey'];
+
+	$ch = curl_init($url);
+	curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+	curl_setopt( $ch, CURLOPT_POSTFIELDS, $vars);
+	curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+	curl_setopt( $ch, CURLOPT_HEADER, 0);
+	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+
+	$resp = curl_exec($ch);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
 ?>
