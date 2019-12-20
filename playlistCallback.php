@@ -188,6 +188,9 @@ function loadNextItem() {
 
 		if (isset($data['playlistEntries']))
 			returnText($json);
+
+		if (isset($pluginSettings['UseDefaultPlaylist']) && ($pluginSettings['UseDefaultPlaylist'] == 0))
+			returnText($json);
 	}
 
 	// Nothing in the queue, so fall back to local CML-DefaultPlaylist playlist
