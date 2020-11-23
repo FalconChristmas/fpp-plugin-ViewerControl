@@ -129,16 +129,20 @@ $(document).ready(function(){
 		}
 	});
 
-	var total = $tabs.find('.ui-tabs-nav li').length;
-	var currentLoadingTab = 1;
-	$tabs.bind('tabsload',function(){
-		currentLoadingTab++;
-		if (currentLoadingTab < total)
-			$tabs.tabs('load',currentLoadingTab);
-		else
-			$tabs.unbind('tabsload');
-	}).tabs('load',currentLoadingTab);
+//	var total = $tabs.find('.ui-tabs-nav li').length;
+//	var currentLoadingTab = 1;
+//	$tabs.bind('tabsload',function(){
+//		currentLoadingTab++;
+//		if (currentLoadingTab < total)
+//			$tabs.tabs('load',currentLoadingTab);
+//		else
+//			$tabs.unbind('tabsload');
+//	}).tabs('load',currentLoadingTab);
 
+    setTimeout(LoadPageData, 250);
+});
+
+function LoadPageData() {
 	if (($('#SiteCode').val() != '') && ($('#SiteKey').val() != ''))
 	{
 		ReLoadSiteInfo();
@@ -146,11 +150,27 @@ $(document).ready(function(){
 		SyncPlaylists();
 	}
 
-	GetBlockList();
+    PopulateRequestModelList();
 	$('#txtPlaylistName').prop('disabled', true);
 	PlaylistTypeChanged();
-	PopulatePlaylists("playList", '^CML-', '');
-});
+    LoadPlaylistList();
+}
+
+var currentPlaylists = [];
+function LoadPlaylistList() {
+    $.get('/api/playlists', function(data) {
+        currentPlaylists = [];
+        $('#playlistSelect option').remove();
+        //$('#playlistSelect').append("<option value=''> -- Pick A Playlist -- </option>");
+        //PopulatePlaylists("playList", '^CML-', '');
+        for (var i = 0; i < data.length; i++) {
+            currentPlaylists[i] = data[i];
+            $('#playlistSelect').append("<option value='" + data[i] + "'>" + data[i] + "</option>");
+        }
+
+		SyncPlaylists();
+    });
+}
 
 function SetSiteInfo(data) {
 	if (data.SiteName == 'ERROR')
@@ -210,7 +230,7 @@ function AddNewCMLPlaylist() {
 		{
 			var xmlDoc=xmlhttp.responseXML; 
 			var productList = xmlDoc.getElementsByTagName('Music')[0];
-			PopulatePlaylists('playList', '^CML-', '');
+            LoadPlaylistList();
 			PopulatePlayListEntries(plName,true);
 			$('#txtName').val(plName);
 			$('#txtName').focus();
@@ -356,104 +376,60 @@ function LoadQueue()
 	});
 }
 
-function SendWSCommand(data)
-{
-	if (!wsIsOpen)
-	{
-		dataIsPending = 1;
-		pendingData = data;
+function PopulateRequestModelList() {
+    var host = $('#RequestCodeModelHost').val();
 
-		ws = new WebSocket("ws://<? echo $_SERVER['HTTP_HOST']; ?>:32321/echo");
-		ws.onopen = function()
-		{
-			wsIsOpen = 1;
-			if (dataIsPending)
-			{
-				dataIsPending = 0;
-				ws.send(JSON.stringify(pendingData));
-			}
-		}
-		ws.onmessage = function(evt)
-		{
-			var data = JSON.parse(evt.data);
-			if (data.Command == "GetBlockList") {
-				blockList = JSON.parse(evt.data).Result;
-				ProcessBlockListResponse();
-			} else if (data.Command == "GetFontList") {
-				ProcessFontListResponse(JSON.parse(evt.data).Result);
-			}
-		},
-     	ws.onclose = function()
-		{ 
-		 	wsIsOpen = 0;
-		};
-	} else {
-		ws.send(JSON.stringify(data));
-	}
+	GetBlockList(host);
+    GetFontList(host);
 }
 
+function GetFontList(host = "") {
+    if (host != "")
+        host = "http://" + host;
 
-function GetFontList() {
-	SendWSCommand( { Command: "GetFontList" } );
+    $.get( host + "/api/overlays/fonts", function(data) {
+        $('#RequestCodeFont option').remove();
+	    $('#RequestCodeFont').append("<option value=''> -- Pick A Font -- </option>");
+        data.forEach( function (item, index) {
+            var key = item;
+            var text = key.replace(/[^-a-zA-Z0-9]/g, '');
+            $('#RequestCodeFont').append("<option value='" + key + "'>" + text + "</option>");
+        });
+
+        if (pluginSettings['RequestCodeFont'] != '')
+            $('#RequestCodeFont').val(pluginSettings['RequestCodeFont']);
+    });
 }
 
-function ProcessFontListResponse(list) {
-	$('#RequestCodeFont option').remove();
-	$('#RequestCodeFont').append("<option value=''> -- Pick A Font -- </option>");
+function GetBlockList(host = "") {
+    if (host != "")
+        host = "http://" + host;
 
-	for (var i = 0; i < list.length; i++) {
-		var key = list[i];
-		var text = key.replace(/[^-a-zA-Z0-9]/g, '');
-		if (key == text)
-		{
-			var option = "<option value='" + key + "'";
+    $.get( host + "/api/overlays/models", function(data){
+        blockList = new Map();
+        $('#RequestCodeModel option').remove();
+        $('#RequestCodeModel').append("<option value=''> -- Pick A Model -- </option>");
+        blockName = "";
+        data.forEach( function (item, index) {
+            if (blockName == "") {
+                blockName = item["Name"];
+            }
+            var key = item["Name"];
+            if (item.Orientation == 'vertical') {
+                item.height = item.ChannelCount / item.StrandsPerString / item.StringCount / 3;
+                item.width = item.ChannelCount / 3 / item.height;
+            } else {
+                item.width = item.ChannelCount / item.StrandsPerString / item.StringCount / 3;
+                item.height = item.ChannelCount / 3 / item.width;
+            }
 
-			if (key == RequestCodeFont)
-				option += " selected";
+            blockList[key] = item;
+            $('#RequestCodeModel').append("<option value='" + key + "'>" + key + " (" + blockList[key].width + "x" + blockList[key].height + ")</option>");
+        });
 
-			option += ">" + text + "</option>";
-
-			$('#RequestCodeFont').append(option);
-		}
-	}
-}
-
-function GetBlockList() {
-	SendWSCommand( { Command: "GetBlockList" } );
-}
-
-function ProcessBlockListResponse() {
-	GetFontList();
-
-	$('#RequestCodeModel option').remove();
-	$('#RequestCodeModel').append("<option value=''> -- Pick A Model -- </option>");
-	blockName = "";
-	var sortedNames = Object.keys(blockList);
-	sortedNames.sort();
-	for (var i = 0; i < sortedNames.length; i++) {
-		var key = sortedNames[i];
-		if (blockName == "")
-			blockName = key;
-		if (blockList[key].orientation == 'V')
-		{
-			blockList[key].height = blockList[key].channelCount / blockList[key].strandsPerString / blockList[key].stringCount / 3;
-			blockList[key].width = blockList[key].channelCount / 3 / blockList[key].height;
-		}
-		else
-		{
-			blockList[key].width = blockList[key].channelCount / blockList[key].strandsPerString / blockList[key].stringCount / 3;
-			blockList[key].height = blockList[key].channelCount / 3 / blockList[key].width;
-		}
-
-		var option = "<option value='" + key + "'";
-		if (key == RequestCodeModel)
-			option += " selected";
-		option += ">" + key + " (" + blockList[key].width + "x" + blockList[key].height + ")</option>";
-
-		$('#RequestCodeModel').append(option);
-	}
-
-	selectBlock(blockName);
+        if (pluginSettings['RequestCodeModel'] != '')
+            $('#RequestCodeModel').val(pluginSettings['RequestCodeModel']);
+    });
 }
 
 function PlaylistExists(name)
@@ -499,7 +475,8 @@ function EditPlaylist(item)
 	var $row = $(item).parent().parent();
 	var name = $row.find('.playlistName').html();
 
-	PopulatePlayListEntries(name, true);
+	//PopulatePlayListEntries(name, true);
+    LoadPlaylistDetails(name);
 }
 
 var createButton = "<input type='button' class='buttons actionCreate' value='Create' onClick='CreatePlaylist(this)';> ";
@@ -721,7 +698,9 @@ function SyncPlaylists()
 		<div id='tab-playlists'>
 			<fieldset style="padding: 10px; border: 2px solid #000;">
 				<legend>Playlists</legend>
-				<span id = "playList"> </span>
+                <select id='playlistSelect' size='5' style='min-width: 150px;' onChange='EditPlaylist();'>
+                </select>
+                <br>
 				<span>
 					<input type='button' class='buttons' value='Sync Playlists' onClick='SyncPlaylists();'>
 					<br>
@@ -757,7 +736,7 @@ include_once('playlistEditor.php');
 						<tr><td>Remote Model Host IP:</td>
 							<td>
 <?
-PrintSettingTextSaved('RequestCodeModelHost', 0, 0, 32, 32, 'fpp-plugin-ViewerControl');
+PrintSettingTextSaved('RequestCodeModelHost', 0, 0, 32, 32, 'fpp-plugin-ViewerControl', '', 'PopulateRequestModelList');
 ?>
 							</td></tr>
 						<tr><td>Model:</td><td>

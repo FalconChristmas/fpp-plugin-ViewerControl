@@ -13,7 +13,6 @@ $skipJSsettings = 1;
 require_once('common.php');
 require_once('commandsocket.php');
 require_once('universeentry.php');
-require_once('playlistentry.php');
 require_once('pluginconfig.php');
 
 $command_array = Array(
@@ -182,7 +181,7 @@ function loadNextItem() {
 
 	if (file_exists($nextFile))
 	{
-		$json = file_get_contents($settings['mediaDirectory'] . '/plugins/' . $pluginSettings['plugin'] . '/tmp/next.json');
+		$json = file_get_contents($nextFile);
 
 		$data = json_decode($json, true);
 
@@ -190,7 +189,10 @@ function loadNextItem() {
 			returnText($json);
 
 		if (isset($pluginSettings['UseDefaultPlaylist']) && ($pluginSettings['UseDefaultPlaylist'] == 0))
+		{
+			unlink($nextFile);
 			returnText($json);
+		}
 	}
 
 	// Nothing in the queue, so fall back to local CML-DefaultPlaylist playlist
